@@ -1,0 +1,12 @@
+{
+    "include": ["./src/**/*"],
+    "exclude": ["./tsdown.config.ts"],
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "bundler"
+    }
+}
