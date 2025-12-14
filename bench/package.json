@@ -1,0 +1,19 @@
+{
+    "name": "@prtty/bench",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "bench": "node colors.js"
+    },
+    "dependencies": {
+        "@types/benchmark": "^2.1.5",
+        "ansi-colors": "^4.1.3",
+        "benchmark": "^2.1.4",
+        "chalk": "^4.1.0",
+        "colorette": "^2.0.20",
+        "colors": "^1.4.0",
+        "kleur": "^4.1.5",
+        "picocolors": "^1.1.1",
+        "yoctocolors": "^2.1.2"
+    }
+}
