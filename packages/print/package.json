@@ -1,0 +1,35 @@
+{
+  "name": "@prtty/print",
+  "version": "1.0.0",
+  "description": "Just another Node.js logging library",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "ansi-regex": "^6.2.2",
+    "@prtty/prtty": "^1.0.0"
+  }
+}
