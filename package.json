@@ -26,6 +26,11 @@
     "tsdown": "^0.17.1",
     "typescript": "^5.9.3"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "engines": {
     "node": ">=20.12.0"
   },
