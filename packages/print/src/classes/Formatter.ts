@@ -2,7 +2,6 @@ import { formatWithOptions, stripVTControlCharacters } from 'node:util';
 import { BaseFormatter, type FormatterFormatOptions } from './BaseFormatter.js';
 import { LogLevel } from '../types/constants.js';
 import ansiRegex from 'ansi-regex';
-import { Utils } from './Utils.js';
 import type { Logger } from './Logger.js';
 import { Prtty } from '@prtty/prtty';
 
@@ -12,12 +11,10 @@ export class Formatter extends BaseFormatter {
 
     public constructor() {
         super();
-
-        this.colors.disabled = () => !Utils.supportsColor();
     }
 
     public formatConsoleLog(options: FormatterFormatOptions): string {
-        if (!Utils.supportsColor()) return this.formatWriteStreamLog(options);
+        if (!Prtty.supportsColor()) return this.formatWriteStreamLog(options);
 
         const string: string = this.stringify(options.logger, ...options.messages);
         const prefix: string = this.getConsoleLogPrefix(options.level, options.logger);

@@ -1,10 +1,11 @@
 import { styleText, type InspectColor, type InspectColorBackground, type InspectColorForeground, type InspectColorModifier, type StyleTextOptions } from 'node:util';
+import tty from 'node:tty';
 
 export class Prtty implements Prtty.ColorMap {
     public value: string;
     public styles: Prtty.Styles[] = [];
     public options: StyleTextOptions = {};
-    public disabled: boolean|(() => boolean) = false;
+    public disabled: boolean|(() => boolean) = !Prtty.supportsColor();
 
     constructor(options: StyleTextOptions = {}) {
         this.value = '';
@@ -149,6 +150,22 @@ export namespace Prtty {
     export function styleText(): Prtty;
     export function styleText(value?: string): Prtty|string {
         throw new Error('This function should not be called directly.');
+    }
+
+    /**
+     * @see https://github.com/jorgebucaran/colorette/blob/fdfab65a93faa31f4335eb0bb945a306a732f023/index.js#L9-L23
+     */
+    export function supportsColor(options?: { env?: NodeJS.ProcessEnv; argv?: string[]; platform?: NodeJS.Platform; }): boolean {
+        const { env = process.env, argv = process.argv, platform = process.platform } = options ?? {};
+
+        const isDisabled = "NO_COLOR" in env || argv.includes("--no-color");
+        const isForced = "FORCE_COLOR" in env || argv.includes("--color");
+        const isWindows = platform === "win32";
+        const isDumbTerminal = env.TERM === "dumb";
+        const isCompatibleTerminal = tty.isatty(1) && env.TERM && !isDumbTerminal;
+        const isCI = "CI" in env && ("GITHUB_ACTIONS" in env || "GITLAB_CI" in env || "CIRCLECI" in env);
+
+        return !isDisabled && (isForced || (isWindows && !isDumbTerminal) || isCompatibleTerminal || isCI);
     }
 }
 

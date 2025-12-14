@@ -3,26 +3,12 @@ import { readFile, rename, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { brotliCompress, gzip } from 'node:zlib';
 import inspector from 'node:inspector';
-import tty from 'node:tty';
 
 export class Utils {
     private constructor() {}
 }
 
 export namespace Utils {
-    export function supportsColor(options?: { env?: NodeJS.ProcessEnv; argv?: string[]; platform?: NodeJS.Platform; }): boolean {
-        const { env = process.env, argv = process.argv, platform = process.platform } = options ?? {};
-
-        const isDisabled = "NO_COLOR" in env || argv.includes("--no-color");
-        const isForced = "FORCE_COLOR" in env || argv.includes("--color");
-        const isWindows = platform === "win32";
-        const isDumbTerminal = env.TERM === "dumb";
-        const isCompatibleTerminal = tty.isatty(1) && env.TERM && !isDumbTerminal;
-        const isCI = "CI" in env && ("GITHUB_ACTIONS" in env || "GITLAB_CI" in env || "CIRCLECI" in env);
-
-        return !isDisabled && (isForced || (isWindows && !isDumbTerminal) || isCompatibleTerminal || isCI);
-    }
-
     export function isDebugging(): boolean {
         return process.env.NODE_ENV === 'development' || (!!inspector.url() || /--debug|--inspect/g.test(process.execArgv.join('')));
     }
