@@ -1,5 +1,5 @@
 {
-  "name": "prtty",
+  "name": "@prtty/prtty",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
