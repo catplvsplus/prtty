@@ -8,7 +8,7 @@ export default defineConfig({
     nodeProtocol: true,
     cjsDefault: false,
     format: ['cjs', 'esm'],
-    platform: 'neutral',
+    platform: 'node',
     sourcemap: true,
     dts: true,
     clean: true,
