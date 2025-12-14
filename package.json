@@ -1,6 +1,7 @@
 {
     "name": "@prtty/monorepo",
     "private": true,
+    "type": "module",
     "scripts": {
         "build": "lerna run build"
     },
