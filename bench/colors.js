@@ -43,5 +43,4 @@ new bench.Suite()
   )
   .run()
 
-  
 console.log(runs.sort((a, b) => b.hz - a.hz).map(r => r.name + `${Math.floor(r.hz).toLocaleString()} ops/sec`.padStart(18)).join("\n"));
