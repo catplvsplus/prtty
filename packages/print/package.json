@@ -31,5 +31,8 @@
   "dependencies": {
     "@prtty/prtty": "^1.1.0",
     "ansi-regex": "^6.2.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
