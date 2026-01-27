@@ -1,6 +1,6 @@
 {
   "name": "@prtty/print",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Just another Node.js logging library",
   "license": "MIT",
   "type": "module",
@@ -29,7 +29,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@prtty/prtty": "^1.1.0",
+    "@prtty/prtty": "^1.1.1",
     "ansi-regex": "^6.2.2"
   },
   "publishConfig": {
