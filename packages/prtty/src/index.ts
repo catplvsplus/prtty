@@ -2,13 +2,11 @@ import { styleText, type InspectColor, type InspectColorBackground, type Inspect
 import tty from 'node:tty';
 
 export class Prtty implements Prtty.ColorMap {
-    public value: string;
     public styles: Prtty.Styles[] = [];
     public options: StyleTextOptions = {};
     public disabled: boolean|(() => boolean) = !Prtty.supportsColor();
 
     constructor(options: StyleTextOptions = {}) {
-        this.value = '';
         this.options = options;
 
         this.toString = this.toString.bind(this);
@@ -61,25 +59,23 @@ export class Prtty implements Prtty.ColorMap {
         this.underline = this.underline.bind(this);
     }
 
-    public toString(): string {
-        return this.isDisabled() ? String(this.value) : styleText(this.styles, String(this.value));
-    }
-
     public isDisabled(): boolean {
         return typeof this.disabled === 'boolean' ? this.disabled : this.disabled();
     }
 
     private _chain(styles: Prtty.Styles[]): typeof Prtty.styleText {
-        function style(value?: string): Prtty|string {
-            this.value = value ?? this.value;
+        function style(this: Prtty, value?: string|number): Prtty|string {
             this.styles = this.styles.concat(styles);
 
-            if (typeof value === 'string') {
-                const result = this.toString();
+            if (typeof value !== 'undefined') {
+                const result = this.isDisabled()
+                    ? String(value)
+                    : styleText(this.styles, String(value), {
+                        validateStream: false,
+                        ...this.options
+                    });
 
-                this.value = '';
-                this.styles = [];
-
+                this._clear();
                 return result;
             }
 
@@ -87,6 +83,10 @@ export class Prtty implements Prtty.ColorMap {
         }
 
         return style as typeof Prtty.styleText;
+    }
+
+    private _clear(): void {
+        this.styles = [];
     }
 
     public black = this._chain(['black']);
