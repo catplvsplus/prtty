@@ -3,7 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "lerna run build"
+        "build": "lerna run build",
+        "bench": "node ./bench/colors.js"
     },
     "devDependencies": {
         "@types/node": "^25.0.2",
