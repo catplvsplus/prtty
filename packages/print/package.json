@@ -1,6 +1,6 @@
 {
   "name": "@prtty/print",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Just another Node.js logging library",
   "license": "MIT",
   "type": "module",
