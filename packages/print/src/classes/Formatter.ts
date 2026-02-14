@@ -9,10 +9,6 @@ export class Formatter extends BaseFormatter {
     public disabled: boolean = false;
     public colors: Prtty = new Prtty();
 
-    public constructor() {
-        super();
-    }
-
     public formatConsoleLog(options: FormatterFormatOptions): string {
         if (!Prtty.supportsColor()) return this.formatWriteStreamLog(options);
 
@@ -65,45 +61,34 @@ export class Formatter extends BaseFormatter {
         const time = date.toLocaleTimeString(undefined, { hour12: false });
 
         let prefix: string = '';
+        let color: typeof Prtty.styleText;
 
         switch (level) {
             case LogLevel.Error:
                 prefix += this.colors.bgRed().bold().black(` ${LogLevel[level].toUpperCase()} `);
-
-                if (logger?.label) {
-                    prefix += this.colors.bgBlack().red().dim(` ${logger.label} `);
-                }
-
+                color = this.colors.red;
                 break;
             case LogLevel.Warn:
                 prefix += this.colors.bgYellow().bold().black(` ${LogLevel[level].toUpperCase()}  `);
-
-                if (logger?.label) {
-                    prefix += this.colors.bgBlack().yellow().dim(` ${logger.label} `);
-                }
-
+                color = this.colors.yellow;
                 break;
             case LogLevel.Info:
                 prefix += this.colors.bgCyan().bold().black(` ${LogLevel[level].toUpperCase()}  `);
-
-                if (logger?.label) {
-                    prefix += this.colors.bgBlack().cyan().dim(` ${logger.label} `);
-                }
-
+                color = this.colors.cyan;
                 break;
             case LogLevel.Debug:
                 prefix += this.colors.bgMagenta().bold().white(` ${LogLevel[level].toUpperCase()} `);
-
-                if (logger?.label) {
-                    prefix += this.colors.bgBlack().magenta().dim(` ${logger.label}`);
-                }
-
+                color = this.colors.magenta;
                 break;
         }
 
-        prefix += this.colors.gray(` ${time} `);
+        prefix += this.colors.dim(` ${color(time)}: `);
 
-        return `${prefix}${this.colors.gray(':')} `;
+        if (logger?.label) {
+            prefix += `${this.colors.dim('[')}${color(logger.label)}${this.colors.dim(']')} `;
+        }
+
+        return prefix;
     }
 
     public getWriteStreamLogPrefix(level: LogLevel, logger: Logger): string {
