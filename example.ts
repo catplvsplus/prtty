@@ -1,6 +1,6 @@
-import { logger, Logger, LogLevel } from '@prtty/print';
+import { logger, Logger, LogLevel } from './packages/print/src/index.ts';
+import { colors as prtty } from './packages/prtty/src/index.ts';
 
-import { colors as prtty } from '@prtty/prtty';
 import chalk from 'chalk';
 import kleur from 'kleur';
 import colors from 'colors';
@@ -12,10 +12,10 @@ import { styleText } from 'node:util';
 
 const newLogger = new Logger({
     label: 'example',
-    level: LogLevel.Info
+    logLevel: LogLevel.Info
 })
 
-const test = (c) => c.red(`${c.bold(`${c.cyan(`${c.yellow("yellow")}cyan`)}`)}red`);
+const test = (c: any) => c.red(`${c.bold(`${c.cyan(`${c.yellow("yellow")}cyan`)}`)}red`);
 const testNode = () => styleText("red", `${styleText(["bold", "cyan"], `${styleText("yellow", "yellow")}cyan`)}red`);
 
 newLogger.info(prtty.cyan(`Hello, ${prtty.bold().bgBlue().white('World!')}`));

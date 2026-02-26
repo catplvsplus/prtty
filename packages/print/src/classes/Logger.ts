@@ -6,7 +6,7 @@ import { type InspectOptions } from 'node:util';
 import path from 'node:path';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import type { BaseFormatter, FormatterFormatOptions } from './BaseFormatter.js';
-import type { Args, Key } from '../types/types.js';
+import type { Args, Key, TTYWriteStream } from '../types/types.js';
 import { Utils } from './Utils.js';
 
 export class Logger extends EventEmitter<Logger.Events> implements Logger.Options {
@@ -18,6 +18,9 @@ export class Logger extends EventEmitter<Logger.Events> implements Logger.Option
     public objectInspectOptions?: InspectOptions;
     public logLevel: LogLevel|null;
     public writeLevel: LogLevel|null;
+
+    public stdout!: TTYWriteStream;
+    public stderr!: TTYWriteStream;
 
     get writeStream(): WriteStream | undefined {
         return this._writeStream ?? this.parent?.writeStream;
@@ -42,6 +45,8 @@ export class Logger extends EventEmitter<Logger.Events> implements Logger.Option
         this.objectInspectOptions = options?.objectInspectOptions;
         this.logLevel = options?.logLevel ?? LogLevel.Info;
         this.writeLevel = options?.writeLevel ?? options?.writeLevel !== null ? (options?.logLevel ?? LogLevel.Info) : null;
+        this.stdout = options?.stdout ?? process.stdout;
+        this.stderr = options?.stderr ?? process.stderr;
 
         this.error = this.error.bind(this);
         this.warning = this.warning.bind(this);
@@ -109,6 +114,7 @@ export class Logger extends EventEmitter<Logger.Events> implements Logger.Option
         const options: FormatterFormatOptions = {
             level,
             messages: data,
+            stream: this.stdout,
             logger: this
         };
 
@@ -123,17 +129,14 @@ export class Logger extends EventEmitter<Logger.Events> implements Logger.Option
 
         if (this.logLevel && level >= this.logLevel) {
             switch (level) {
-                case LogLevel.Debug:
-                    console.debug(pretty);
-                    break;
-                case LogLevel.Info:
-                    console.info(pretty);
-                    break;
                 case LogLevel.Warn:
-                    console.warn(pretty);
-                    break;
                 case LogLevel.Error:
-                    console.error(pretty);
+                    this.stderr.write(`${pretty}\n`, 'utf-8');
+                    break;
+                case LogLevel.Debug:
+                case LogLevel.Info:
+                default:
+                    this.stdout.write(`${pretty}\n`, 'utf-8');
                     break;
             }
         }
@@ -270,6 +273,14 @@ export namespace Logger {
          * @default LogLevel.Info
          */
         writeLevel?: LogLevel|null;
+        /**
+         * The stdout write stream for console output
+         */
+        stdout?: TTYWriteStream;
+        /**
+         * The stderr write stream for console output
+         */
+        stderr?: TTYWriteStream;
     }
 
     export interface WriteStreamOptions {

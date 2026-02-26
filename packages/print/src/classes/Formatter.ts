@@ -10,7 +10,7 @@ export class Formatter extends BaseFormatter {
     public colors: Prtty = new Prtty();
 
     public formatConsoleLog(options: FormatterFormatOptions): string {
-        if (!Prtty.supportsColor()) return this.formatWriteStreamLog(options);
+        if (!Prtty.supportsColor({ stream: options.stream })) return this.formatWriteStreamLog(options);
 
         const string: string = this.stringify(options.logger, ...options.messages);
         const prefix: string = this.getConsoleLogPrefix(options.level, options.logger);

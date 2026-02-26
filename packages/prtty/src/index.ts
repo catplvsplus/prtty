@@ -1,5 +1,5 @@
 import { styleText, type InspectColor, type InspectColorBackground, type InspectColorForeground, type InspectColorModifier, type StyleTextOptions } from 'node:util';
-import tty from 'node:tty';
+import tty, { type WriteStream } from 'node:tty';
 
 export class Prtty implements Prtty.ColorMap {
     public styles: Prtty.Styles[] = [];
@@ -155,17 +155,30 @@ export namespace Prtty {
     /**
      * @see https://github.com/jorgebucaran/colorette/blob/fdfab65a93faa31f4335eb0bb945a306a732f023/index.js#L9-L23
      */
-    export function supportsColor(options?: { env?: NodeJS.ProcessEnv; argv?: string[]; platform?: NodeJS.Platform; }): boolean {
-        const { env = process.env, argv = process.argv, platform = process.platform } = options ?? {};
+    export function supportsColor(options?: SupportsColorOptions): boolean {
+        const { env = process.env, argv = process.argv, platform = process.platform, stream = process.stdout } = options ?? {};
 
         const isDisabled = "NO_COLOR" in env || argv.includes("--no-color");
         const isForced = "FORCE_COLOR" in env || argv.includes("--color");
         const isWindows = platform === "win32";
         const isDumbTerminal = env.TERM === "dumb";
-        const isCompatibleTerminal = tty.isatty(1) && env.TERM && !isDumbTerminal;
         const isCI = "CI" in env && ("GITHUB_ACTIONS" in env || "GITLAB_CI" in env || "CIRCLECI" in env);
+        const isCompatibleTerminal = (
+            typeof stream.fd === "number"
+                ? tty.isatty(stream.fd)
+                : stream.isTTY
+        )
+        && env.TERM
+        && !isDumbTerminal;
 
         return !isDisabled && (isForced || (isWindows && !isDumbTerminal) || isCompatibleTerminal || isCI);
+    }
+
+    export interface SupportsColorOptions {
+        env?: NodeJS.ProcessEnv;
+        argv?: string[];
+        platform?: NodeJS.Platform;
+        stream?: WriteStream & { fd?: number; };
     }
 }
 
