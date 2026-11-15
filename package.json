@@ -7,10 +7,10 @@
         "bench": "node ./bench/colors.js"
     },
     "devDependencies": {
-        "@types/node": "^25.3.1",
-        "lerna": "^9.0.4",
-        "tsdown": "^0.20.3",
-        "typescript": "^5.9.3"
+        "@types/node": "^25.9.9",
+        "lerna": "^9.0.7",
+        "tsdown": "^0.23.7",
+        "typescript": "^7.0.2"
     },
     "workspaces": [
         "packages/*",
