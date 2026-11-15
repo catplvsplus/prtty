@@ -4,7 +4,6 @@ export default defineConfig({
     entry: './src/index.ts',
     outDir: './dist',
     tsconfig: './tsconfig.json',
-    skipNodeModulesBundle: true,
     nodeProtocol: true,
     cjsDefault: false,
     format: ['cjs', 'esm'],
@@ -12,4 +11,7 @@ export default defineConfig({
     sourcemap: true,
     dts: true,
     clean: true,
+    deps: {
+        neverBundle: true
+    }
 });

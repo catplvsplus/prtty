@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "tsdown --config-loader unrun",
+    "build": "tsdown",
     "prepack": "bun run build"
   },
   "files": [
