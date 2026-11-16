@@ -9,54 +9,8 @@ export class Prtty implements Prtty.ColorMap {
     constructor(options: StyleTextOptions = {}) {
         this.options = options;
 
-        this.toString = this.toString.bind(this);
         this.isDisabled = this.isDisabled.bind(this);
         this._chain = this._chain.bind(this);
-
-        this.black = this.black.bind(this);
-        this.blue = this.blue.bind(this);
-        this.blueBright = this.blueBright.bind(this);
-        this.cyan = this.cyan.bind(this);
-        this.cyanBright = this.cyanBright.bind(this);
-        this.gray = this.gray.bind(this);
-        this.green = this.green.bind(this);
-        this.greenBright = this.greenBright.bind(this);
-        this.magenta = this.magenta.bind(this);
-        this.magentaBright = this.magentaBright.bind(this);
-        this.red = this.red.bind(this);
-        this.redBright = this.redBright.bind(this);
-        this.white = this.white.bind(this);
-        this.whiteBright = this.whiteBright.bind(this);
-        this.yellow = this.yellow.bind(this);
-        this.yellowBright = this.yellowBright.bind(this);
-
-        this.bgBlack = this.bgBlack.bind(this);
-        this.bgBlue = this.bgBlue.bind(this);
-        this.bgBlueBright = this.bgBlueBright.bind(this);
-        this.bgCyan = this.bgCyan.bind(this);
-        this.bgCyanBright = this.bgCyanBright.bind(this);
-        this.bgGray = this.bgGray.bind(this);
-        this.bgGreen = this.bgGreen.bind(this);
-        this.bgGreenBright = this.bgGreenBright.bind(this);
-        this.bgMagenta = this.bgMagenta.bind(this);
-        this.bgMagentaBright = this.bgMagentaBright.bind(this);
-        this.bgRed = this.bgRed.bind(this);
-        this.bgRedBright = this.bgRedBright.bind(this);
-        this.bgWhite = this.bgWhite.bind(this);
-        this.bgWhiteBright = this.bgWhiteBright.bind(this);
-        this.bgYellow = this.bgYellow.bind(this);
-        this.bgYellowBright = this.bgYellowBright.bind(this);
-
-        this.blink = this.blink.bind(this);
-        this.bold = this.bold.bind(this);
-        this.dim = this.dim.bind(this);
-        this.doubleunderline = this.doubleunderline.bind(this);
-        this.hidden = this.hidden.bind(this);
-        this.inverse = this.inverse.bind(this);
-        this.italic = this.italic.bind(this);
-        this.reset = this.reset.bind(this);
-        this.strikethrough = this.strikethrough.bind(this);
-        this.underline = this.underline.bind(this);
     }
 
     public isDisabled(): boolean {
@@ -65,7 +19,7 @@ export class Prtty implements Prtty.ColorMap {
 
     private _chain(styles: Prtty.Styles[]): typeof Prtty.styleText {
         function style(this: Prtty, value?: string|number): Prtty|string {
-            this.styles = this.styles.concat(styles);
+            this.styles.push(...styles);
 
             if (typeof value !== 'undefined') {
                 const result = this.isDisabled()
@@ -82,7 +36,7 @@ export class Prtty implements Prtty.ColorMap {
             return this;
         }
 
-        return style as typeof Prtty.styleText;
+        return style.bind(this) as typeof Prtty.styleText;
     }
 
     private _clear(): void {
