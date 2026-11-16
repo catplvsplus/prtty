@@ -17,8 +17,8 @@ export class Prtty implements Prtty.ColorMap {
         return typeof this.disabled === 'boolean' ? this.disabled : this.disabled();
     }
 
-    private _chain(styles: Prtty.Styles[]): typeof Prtty.styleText {
-        function style(this: Prtty, value?: string|number): Prtty|string {
+    private _chain(styles: Prtty.Styles[]): Prtty.StyleTextFunction {
+        function style(this: Prtty, value?: unknown): Prtty|string {
             this.styles.push(...styles);
 
             if (typeof value !== 'undefined') {
@@ -36,7 +36,7 @@ export class Prtty implements Prtty.ColorMap {
             return this;
         }
 
-        return style.bind(this) as typeof Prtty.styleText;
+        return style.bind(this) as Prtty.StyleTextFunction;
     }
 
     private _clear(): void {
@@ -100,11 +100,10 @@ export namespace Prtty {
 
     export type ColorMap<T = any> = Record<InspectColor, T>;
 
-    export function styleText(value: string): string;
-    export function styleText(): Prtty;
-    export function styleText(value?: string): Prtty|string {
-        throw new Error('This function should not be called directly.');
-    }
+    export type StyleTextFunction = {
+        (value: unknown): string;
+        (): Prtty;
+    };
 
     /**
      * @see https://github.com/jorgebucaran/colorette/blob/fdfab65a93faa31f4335eb0bb945a306a732f023/index.js#L9-L23
