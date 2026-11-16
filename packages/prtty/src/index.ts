@@ -1,8 +1,8 @@
-import { styleText, type InspectColor, type InspectColorBackground, type InspectColorForeground, type InspectColorModifier, type StyleTextOptions } from 'node:util';
+import { styleText as nodeStyleText, type InspectColorBackground, type InspectColorForeground, type InspectColorModifier, type StyleTextOptions } from 'node:util';
 import tty, { type WriteStream } from 'node:tty';
 
-export class Prtty implements Prtty.ColorMap {
-    public styles: Prtty.Styles[] = [];
+export class Prtty implements Prtty.ColorMap<Prtty.StyleTextFunction> {
+    public styles: Prtty.Color[] = [];
     public options: StyleTextOptions = {};
     public disabled: boolean|(() => boolean) = !Prtty.supportsColor();
 
@@ -17,14 +17,14 @@ export class Prtty implements Prtty.ColorMap {
         return typeof this.disabled === 'boolean' ? this.disabled : this.disabled();
     }
 
-    private _chain(styles: Prtty.Styles[]): Prtty.StyleTextFunction {
+    private _chain(styles: Prtty.Color[]): Prtty.StyleTextFunction {
         function style(this: Prtty, value?: unknown): Prtty|string {
             this.styles.push(...styles);
 
             if (typeof value !== 'undefined') {
                 const result = this.isDisabled()
                     ? String(value)
-                    : styleText(this.styles, String(value), {
+                    : Prtty.styleText(this.styles, String(value), {
                         validateStream: false,
                         ...this.options
                     });
@@ -41,6 +41,10 @@ export class Prtty implements Prtty.ColorMap {
 
     private _clear(): void {
         this.styles = [];
+    }
+
+    public hex(hex: Prtty.HexColor): Prtty.StyleTextFunction {
+        return this._chain([hex]);
     }
 
     public black = this._chain(['black']);
@@ -90,20 +94,25 @@ export class Prtty implements Prtty.ColorMap {
 }
 
 export namespace Prtty {
-    export type Styles = InspectColor;
+    export type ForegroundColor = InspectColorForeground;
+    export type BackgroundColor = InspectColorBackground;
+    export type Modifier = InspectColorModifier;
+    export type HexColor = `#${string}`;
+    export type Color = ForegroundColor | BackgroundColor | Modifier | HexColor;
 
-    export type ForegroundColors = InspectColorForeground;
-
-    export type BackgroundColors = InspectColorBackground;
-
-    export type Modifiers = InspectColorModifier;
-
-    export type ColorMap<T = any> = Record<InspectColor, T>;
+    export type ColorMap<T = any> = Record<Exclude<Color, HexColor>, T>;
 
     export type StyleTextFunction = {
         (value: unknown): string;
         (): Prtty;
     };
+
+    export interface SupportsColorOptions {
+        env?: NodeJS.ProcessEnv;
+        argv?: string[];
+        platform?: NodeJS.Platform;
+        stream?: WriteStream & { fd?: number; };
+    }
 
     /**
      * @see https://github.com/jorgebucaran/colorette/blob/fdfab65a93faa31f4335eb0bb945a306a732f023/index.js#L9-L23
@@ -117,21 +126,22 @@ export namespace Prtty {
         const isDumbTerminal = env.TERM === "dumb";
         const isCI = "CI" in env && ("GITHUB_ACTIONS" in env || "GITLAB_CI" in env || "CIRCLECI" in env);
         const isCompatibleTerminal = (
-            typeof stream.fd === "number"
-                ? tty.isatty(stream.fd)
-                : stream.isTTY
-        )
-        && env.TERM
-        && !isDumbTerminal;
+                typeof stream.fd === "number"
+                    ? tty.isatty(stream.fd)
+                    : stream.isTTY
+            )
+            && env.TERM
+            && !isDumbTerminal;
 
         return !isDisabled && (isForced || (isWindows && !isDumbTerminal) || isCompatibleTerminal || isCI);
     }
 
-    export interface SupportsColorOptions {
-        env?: NodeJS.ProcessEnv;
-        argv?: string[];
-        platform?: NodeJS.Platform;
-        stream?: WriteStream & { fd?: number; };
+    export function styleText(styles: Color|Color[], text: string, options?: StyleTextOptions): string {
+        if (typeof nodeStyleText === 'function') {
+            return nodeStyleText(styles, text, options);
+        }
+
+        throw new Error('nodeStyleText is not available in this environment. Please ensure you are running in a Node.js environment that supports the util module.');
     }
 }
 

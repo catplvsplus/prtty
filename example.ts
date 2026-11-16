@@ -20,7 +20,7 @@ const test = (c: any) => c.red(`${c.bold(`${c.cyan(`${c.yellow("yellow")}cyan`)}
 const testNode = () => styleText("red", `${styleText(["bold", "cyan"], `${styleText("yellow", "yellow")}cyan`)}red`);
 
 newLogger.info(prtty.cyan(`Hello, ${prtty.bold().bgBlue().white('World!')}`));
-newLogger.info(prtty.cyan(`Hello, ${prtty.bold().bgBlue().white('World!')}`));
+newLogger.info(prtty.hex('#ff0000')(`Hello, ${prtty.bold().bgBlue().white('World!')}`));
 
 newLogger.info('prtty\t', test(prtty));
 newLogger.info('chalk\t', test(chalk));
