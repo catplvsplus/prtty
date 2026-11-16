@@ -61,7 +61,7 @@ export class Formatter extends BaseFormatter {
         const time = date.toLocaleTimeString(undefined, { hour12: false });
 
         let prefix: string = '';
-        let color: typeof Prtty.styleText;
+        let color: Prtty.StyleTextFunction;
 
         switch (level) {
             case LogLevel.Error:
